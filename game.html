@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Management</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial;
+      }
+
+      body {
+        display: flex;
+        background: #f4f6f9;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 220px;
+        height: 100vh;
+        background: #1e1e2f;
+        color: white;
+        position: fixed;
+      }
+
+      .sidebar h2 {
+        text-align: center;
+        padding: 20px;
+        border-bottom: 1px solid #333;
+      }
+
+      .sidebar ul {
+        list-style: none;
+      }
+
+      .sidebar ul li {
+        padding: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #333;
+      }
+
+      .sidebar ul li:hover {
+        background: #34344e;
+      }
+
+      /* Main */
+      .main {
+        margin-left: 220px;
+        padding: 20px;
+        width: 100%;
+      }
+
+      /* Topbar */
+      .topbar {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Layout */
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      /* Cards */
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Form */
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 12px;
+        width: 100%;
+        border: none;
+        border-radius: 8px;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      table th,
+      table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+
+      .status-open {
+        color: green;
+        font-weight: bold;
+      }
+
+      .status-close {
+        color: red;
+        font-weight: bold;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+        .main {
+          margin-left: 70px;
+        }
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>ADMIN</h2>
+      <ul>
+        <li onclick="go('dashboard.html')">Dashboard</li>
+        <li onclick="go('users.html')">Users</li>
+        <li onclick="go('deposit.html')">Deposit</li>
+        <li onclick="go('withdraw.html')">Withdrawal</li>
+        <li onclick="go('game.html')">Add Game</li>
+      </ul>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="container">
+        <!-- 🔵 ADD GAME -->
+        <div class="card">
+          <h3>Add Game</h3>
+
+          <label>Category</label>
+          <input id="category" placeholder="Morning / Mumbai" />
+
+          <label>Bazar Name</label>
+          <input id="bazar" placeholder="Bazar 1" />
+
+          <label>Start Time</label>
+          <input type="time" id="start" />
+
+          <label>End Time</label>
+          <input type="time" id="end" />
+
+          <button onclick="addGame()">Add Game</button>
+        </div>
+
+        <!-- 🟢 GAME LIST -->
+        <div class="card">
+          <h3>Game List</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Bazar</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="gameTable">
+              <!-- Dynamic -->
+              <tr>
+                <td>1</td>
+                <td>Morning</td>
+                <td>Bazar 1</td>
+                <td>10:00 - 10:30</td>
+                <td class="status-open">OPEN</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function go(page) {
+        window.location.href = page;
+      }
+
+      /* 🔥 Add Game (temporary UI logic) */
+      function addGame() {
+        let category = document.getElementById("category").value;
+        let bazar = document.getElementById("bazar").value;
+        let start = document.getElementById("start").value;
+        let end = document.getElementById("end").value;
+
+        if (!category || !bazar || !start || !end) {
+          alert("All fields required");
+          return;
+        }
+
+        let row = `
+    <tr>
+      <td>#</td>
+      <td>${category}</td>
+      <td>${bazar}</td>
+      <td>${start} - ${end}</td>
+      <td class="status-open">OPEN</td>
+    </tr>
+  `;
+
+        document.getElementById("gameTable").innerHTML += row;
+      }
+    </script>
+  </body>
+</html>

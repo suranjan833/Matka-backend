@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Matka Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      /* Glass Card */
+      .login-card {
+        width: 350px;
+        padding: 30px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        color: white;
+      }
+
+      /* Title */
+      .login-card h2 {
+        margin-bottom: 25px;
+        font-weight: 600;
+      }
+
+      /* Inputs */
+      .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .input-group label {
+        font-size: 14px;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+      }
+
+      /* Button */
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: 15px;
+        font-size: 12px;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="login-card">
+      <h2>Admin Panel</h2>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter email" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter password" />
+      </div>
+
+      <button onclick="login()">Login</button>
+
+      <div class="footer">Secure Admin Access</div>
+    </div>
+
+    <script>
+      function login() {
+        fetch("api/admin/admin_login.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status == 1) {
+              localStorage.setItem("admin_token", data.token);
+              window.location.href = "dashboard.html";
+            } else {
+              alert(data.message);
+            }
+          });
+      }
+    </script>
+  </body>
+</html>
