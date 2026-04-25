@@ -1,8 +1,9 @@
 <?php
-// $host = "localhost";
-// $user = "root";
-// $pass = "matka@@833400";
-// $db = "saptahi1_quizmatka";
+$host = "localhost";
+$user = "saptahi1_matka";
+$pass = "matka@@833400";
+$db = "saptahi1_quizmatka";
+
 
 $host = "localhost";
 $user = "root";

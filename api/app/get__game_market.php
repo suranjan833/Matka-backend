@@ -11,11 +11,19 @@ if (!$data) {
 $category_id = $data['category_id'] ?? '';
 
 if (empty($category_id)) {
-    echo json_encode(["status" => 0, "message" => "Category ID required"]);
+    echo json_encode([
+        "status" => 0,
+        "message" => "Category ID required"
+    ]);
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM game_markets WHERE category_id=? AND status=1");
+$stmt = $conn->prepare("
+    SELECT id, name, start_time, end_time 
+    FROM game_markets 
+    WHERE category_id=? AND status=1
+    ORDER BY start_time ASC
+");
 $stmt->bind_param("i", $category_id);
 $stmt->execute();
 
@@ -26,12 +34,17 @@ $current_time = date("H:i:s");
 
 while ($row = $result->fetch_assoc()) {
 
-
-    if ($current_time >= $row['start_time'] && $current_time <= $row['end_time']) {
-        $row['is_open'] = 1;
+    // 🔥 GAME STATUS LOGIC
+    if ($current_time < $row['start_time']) {
+        $row['game_status'] = "UPCOMING";
+    } elseif ($current_time >= $row['start_time'] && $current_time <= $row['end_time']) {
+        $row['game_status'] = "OPEN";
     } else {
-        $row['is_open'] = 0;
+        $row['game_status'] = "CLOSED";
     }
+
+    // 🔥 formatted time
+    $row['time'] = $row['start_time'] . " - " . $row['end_time'];
 
     $response[] = $row;
 }
