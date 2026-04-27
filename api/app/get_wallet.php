@@ -6,12 +6,17 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// 🔹 Input
+/// 🔹 Input (HANDLE BOTH JSON + FORM DATA)
 $data = json_decode(file_get_contents("php://input"), true);
 
-$user_id = intval($data['user_id'] ?? 0);
+// যদি POST থাকে → সেটাই নাও
+if (!empty($_POST)) {
+    $user_id = intval($_POST['user_id'] ?? 0);
+} else {
+    $user_id = intval($data['user_id'] ?? 0);
+}
 
-// 🔹 Validation
+/// 🔹 Validation
 if ($user_id <= 0) {
     echo json_encode([
         "status" => 400,
@@ -20,7 +25,7 @@ if ($user_id <= 0) {
     exit;
 }
 
-// 🔹 Check wallet
+/// 🔹 Check wallet
 $stmt = $conn->prepare("SELECT balance FROM wallet WHERE user_id=?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -28,7 +33,7 @@ $stmt->store_result();
 
 if ($stmt->num_rows == 0) {
 
-    // 🔥 create wallet if not exists
+    /// 🔥 create wallet if not exists
     $insert = $conn->prepare("INSERT INTO wallet (user_id, balance) VALUES (?, 0)");
     $insert->bind_param("i", $user_id);
     $insert->execute();
@@ -43,7 +48,7 @@ if ($stmt->num_rows == 0) {
     exit;
 }
 
-// 🔹 Fetch balance
+/// 🔹 Fetch balance
 $stmt->bind_result($balance);
 $stmt->fetch();
 

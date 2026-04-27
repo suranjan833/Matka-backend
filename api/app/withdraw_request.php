@@ -6,21 +6,32 @@ ini_set('display_errors', 1);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// 🔹 Get JSON
+/// 🔥 HANDLE BOTH JSON + FORM DATA
 $data = json_decode(file_get_contents("php://input"), true);
 
-// 🔹 Input
-$user_id = intval($data['user_id'] ?? 0);
-$amount = floatval($data['amount'] ?? 0);
+if (!empty($_POST)) {
+    $user_id = intval($_POST['user_id'] ?? 0);
+    $amount = floatval($_POST['amount'] ?? 0);
 
-$bank_name = trim($data['bank_name'] ?? '');
-$account_number = trim($data['account_number'] ?? '');
-$ifsc_code = trim($data['ifsc_code'] ?? '');
-$account_holder = trim($data['account_holder_name'] ?? '');
+    $bank_name = trim($_POST['bank_name'] ?? '');
+    $account_number = trim($_POST['account_no'] ?? '');
+    $ifsc_code = trim($_POST['ifsc'] ?? '');
+    $account_holder = trim($_POST['name'] ?? '');
 
-$upi_id = trim($data['upi_id'] ?? '');
+    $upi_id = trim($_POST['upi_id'] ?? '');
+} else {
+    $user_id = intval($data['user_id'] ?? 0);
+    $amount = floatval($data['amount'] ?? 0);
 
-// 🔹 Validation
+    $bank_name = trim($data['bank_name'] ?? '');
+    $account_number = trim($data['account_no'] ?? '');
+    $ifsc_code = trim($data['ifsc'] ?? '');
+    $account_holder = trim($data['name'] ?? '');
+
+    $upi_id = trim($data['upi_id'] ?? '');
+}
+
+/// 🔹 Validation
 if ($user_id <= 0 || $amount <= 0) {
     echo json_encode([
         "status" => 400,
@@ -29,7 +40,7 @@ if ($user_id <= 0 || $amount <= 0) {
     exit;
 }
 
-// 👉 at least one method required
+/// 🔹 At least one method
 if (empty($upi_id) && (empty($bank_name) || empty($account_number) || empty($ifsc_code))) {
     echo json_encode([
         "status" => 400,
@@ -38,7 +49,7 @@ if (empty($upi_id) && (empty($bank_name) || empty($account_number) || empty($ifs
     exit;
 }
 
-// 🔹 Check wallet balance
+/// 🔹 Check wallet
 $stmt = $conn->prepare("SELECT balance FROM wallet WHERE user_id=?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -62,7 +73,7 @@ if ($amount > $row['balance']) {
     exit;
 }
 
-// 🔹 Insert request
+/// 🔹 Insert request
 $stmt = $conn->prepare("INSERT INTO withdraw_requests 
 (user_id, amount, bank_name, account_number, ifsc_code, account_holder_name, upi_id) 
 VALUES (?,?,?,?,?,?,?)");

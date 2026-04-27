@@ -11,7 +11,7 @@ $result = $conn->query("
     SELECT id, name 
     FROM game_categories 
     WHERE status = 1 
-    ORDER BY id DESC
+    ORDER BY id ASC
 ");
 
 $data = [];
