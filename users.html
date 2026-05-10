@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Users List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        min-height: 100vh;
+        padding: 30px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: auto;
+        background: #fff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .search-box {
+        margin-bottom: 20px;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        outline: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+
+      thead {
+        background: #667eea;
+        color: #fff;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: left;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: 0.3s;
+      }
+
+      tbody tr:hover {
+        background: #f5f7ff;
+      }
+
+      .badge {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        color: white;
+      }
+
+      .active {
+        background: #28a745;
+      }
+
+      .inactive {
+        background: #dc3545;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>👤 Users List</h2>
+
+      <div class="search-box">
+        <input type="text" id="search" placeholder="Search user..." />
+      </div>
+
+      <div id="loading" class="loading">Loading users...</div>
+
+      <table id="userTable" style="display: none">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody id="userBody"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const API_URL = "api/admin/get_all_users.php"; // 🔥 তোমার API path
+
+      async function fetchUsers() {
+        try {
+          const res = await fetch(API_URL);
+          const data = await res.json();
+
+          document.getElementById("loading").style.display = "none";
+
+          if (data.status === 1) {
+            document.getElementById("userTable").style.display = "table";
+            renderUsers(data.data);
+          } else {
+            document.getElementById("loading").innerText = "No users found";
+          }
+        } catch (err) {
+          console.error(err);
+          document.getElementById("loading").innerText = "Error loading data";
+        }
+      }
+
+      function renderUsers(users) {
+        const tbody = document.getElementById("userBody");
+        tbody.innerHTML = "";
+
+        users.forEach((user) => {
+          const row = `
+      <tr>
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.phone}</td>
+      </tr>
+    `;
+          tbody.innerHTML += row;
+        });
+      }
+
+      // 🔍 search filter
+      document.getElementById("search").addEventListener("input", function () {
+        const value = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#userBody tr");
+
+        rows.forEach((row) => {
+          row.style.display = row.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+        });
+      });
+
+      // 🚀 load data
+      fetchUsers();
+    </script>
+  </body>
+</html>
