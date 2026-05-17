@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Withdraw Requests</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        padding: 15px;
+      }
+
+      .container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .topbar h2 {
+        color: #222;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .controls input,
+      .controls select {
+        padding: 10px 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 950px;
+      }
+
+      table thead {
+        background: #1e1e2f;
+        color: white;
+      }
+
+      table th,
+      table td {
+        padding: 14px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      table tbody tr:hover {
+        background: #f9f9f9;
+      }
+
+      .status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .approved {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .rejected {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .approve-btn {
+        background: #28a745;
+      }
+
+      .reject-btn {
+        background: #dc3545;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .pagination button {
+        background: #1e1e2f;
+        min-width: 40px;
+      }
+
+      .pagination button.active {
+        background: #007bff;
+      }
+
+      @media (max-width: 768px) {
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .controls {
+          width: 100%;
+        }
+
+        .controls input,
+        .controls select {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <h2>Withdraw Requests</h2>
+
+        <div class="controls">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search user or UPI"
+          />
+
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Amount</th>
+              <th>Bank / UPI</th>
+              <th>Wallet Balance</th>
+              <th>Remark</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="tableBody">
+            <tr data-status="pending">
+              <td>#101</td>
+              <td>Rahim</td>
+              <td>₹500</td>
+              <td>rahim@upi</td>
+              <td>₹1200</td>
+              <td>
+                <span class="status pending">Pending</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="approve-btn">Approve</button>
+                  <button class="reject-btn">Reject</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-status="approved">
+              <td>#102</td>
+              <td>Karim</td>
+              <td>₹800</td>
+              <td>Axis Bank</td>
+              <td>₹2500</td>
+              <td>
+                <span class="status approved">Approved</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="approve-btn">Approve</button>
+                  <button class="reject-btn">Reject</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-status="rejected">
+              <td>#103</td>
+              <td>Jamal</td>
+              <td>₹300</td>
+              <td>jamal@upi</td>
+              <td>₹900</td>
+              <td>
+                <span class="status rejected">Rejected</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="approve-btn">Approve</button>
+                  <button class="reject-btn">Reject</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-status="pending">
+              <td>#104</td>
+              <td>Hasan</td>
+              <td>₹1000</td>
+              <td>hasan@upi</td>
+              <td>₹5000</td>
+              <td>
+                <span class="status pending">Pending</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="approve-btn">Approve</button>
+                  <button class="reject-btn">Reject</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-status="approved">
+              <td>#105</td>
+              <td>Akash</td>
+              <td>₹650</td>
+              <td>HDFC Bank</td>
+              <td>₹1500</td>
+              <td>
+                <span class="status approved">Approved</span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="approve-btn">Approve</button>
+                  <button class="reject-btn">Reject</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+      const tableBody = document.getElementById("tableBody");
+      const rows = Array.from(tableBody.querySelectorAll("tr"));
+
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const pagination = document.getElementById("pagination");
+
+      let currentPage = 1;
+      const rowsPerPage = 3;
+
+      function filterRows() {
+        const search = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
+
+        return rows.filter((row) => {
+          const text = row.innerText.toLowerCase();
+          const rowStatus = row.dataset.status;
+
+          const matchSearch = text.includes(search);
+          const matchStatus = status === "all" || rowStatus === status;
+
+          return matchSearch && matchStatus;
+        });
+      }
+
+      function displayRows() {
+        const filteredRows = filterRows();
+
+        rows.forEach((row) => {
+          row.style.display = "none";
+        });
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        filteredRows.slice(start, end).forEach((row) => {
+          row.style.display = "";
+        });
+
+        setupPagination(filteredRows);
+      }
+
+      function setupPagination(filteredRows) {
+        pagination.innerHTML = "";
+
+        const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+
+        for (let i = 1; i <= pageCount; i++) {
+          const btn = document.createElement("button");
+
+          btn.innerText = i;
+
+          if (i === currentPage) {
+            btn.classList.add("active");
+          }
+
+          btn.addEventListener("click", () => {
+            currentPage = i;
+            displayRows();
+          });
+
+          pagination.appendChild(btn);
+        }
+      }
+
+      searchInput.addEventListener("input", () => {
+        currentPage = 1;
+        displayRows();
+      });
+
+      statusFilter.addEventListener("change", () => {
+        currentPage = 1;
+        displayRows();
+      });
+
+      displayRows();
+    </script>
+  </body>
+</html>

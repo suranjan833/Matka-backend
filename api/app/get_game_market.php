@@ -1,56 +1,61 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include "../../db.php";
 
 header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents("php://input"), true);
-if (!$data) {
-    $data = $_POST;
-}
+date_default_timezone_set('Asia/Kolkata');
 
-$category_id = $data['category_id'] ?? '';
+$category_id = $_POST['category_id'] ?? '';
 
-if (empty($category_id)) {
-    echo json_encode([
-        "status" => 0,
-        "message" => "Category ID required"
-    ]);
-    exit;
-}
+$sql = "
+SELECT 
+    m.id,
+    m.name,
+    m.start_time,
+    m.end_time,
+    m.status,
+    c.name AS category_name
+FROM game_markets m
+LEFT JOIN game_categories c ON c.id = m.category_id
+WHERE m.category_id = '$category_id'
+ORDER BY m.id DESC
+";
 
-$stmt = $conn->prepare("
-    SELECT id, name, start_time, end_time 
-    FROM game_markets 
-    WHERE category_id=? AND status=1
-    ORDER BY start_time ASC
-");
-$stmt->bind_param("i", $category_id);
-$stmt->execute();
+$result = $conn->query($sql);
 
-$result = $stmt->get_result();
+$data = [];
 
-$response = [];
-$current_time = date("H:i:s");
+$current_time = strtotime(date("H:i:s"));
 
 while ($row = $result->fetch_assoc()) {
 
-    // 🔥 GAME STATUS LOGIC
-    if ($current_time < $row['start_time']) {
+    $start_time = strtotime($row['start_time']);
+    $end_time = strtotime($row['end_time']);
+
+    // 🔥 status logic
+    if ($current_time < $start_time) {
+
         $row['game_status'] = "UPCOMING";
-    } elseif ($current_time >= $row['start_time'] && $current_time <= $row['end_time']) {
-        $row['game_status'] = "OPEN";
+
+    } elseif ($current_time >= $start_time && $current_time <= $end_time) {
+
+        $row['game_status'] = "RUNNING";
+
     } else {
+
         $row['game_status'] = "CLOSED";
     }
 
-    // 🔥 formatted time
     $row['time'] = $row['start_time'] . " - " . $row['end_time'];
 
-    $response[] = $row;
+    $data[] = $row;
 }
 
 echo json_encode([
     "status" => 1,
-    "data" => $response
+    "data" => $data
 ]);
 ?>
